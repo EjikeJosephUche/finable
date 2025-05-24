@@ -2,6 +2,8 @@
 
 A new kind of money system, that's clear, safe and fair.
 It's a secure, TypeScript-based RESTful API for account and card data handling, using Node.js, Express, Mongoose (MongoDB), and AES encryption.
+[Link to published postman documentation](https://documenter.getpostman.com/view/42790271/2sB2qcBzrK)
+
 [Link to complete Postman API Documentation](https://www.postman.com/technical-astronomer-46430310/public/collection/mjrlrcm/finacle?action=share&creator=42790271)
 
 ## Features
