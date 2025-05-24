@@ -23,8 +23,5 @@ router.get("/account/encryptedanddecrypted", (req, res) => {
 router.get("/account/:hash", (req, res) => {
   AccountController.getDecryptedDataFields(req, res);
 });
-// router.get("/account/:email", (req, res) => {
-//   AccountController.getAccountByEmail(req, res);
-// });
 
 export default router;

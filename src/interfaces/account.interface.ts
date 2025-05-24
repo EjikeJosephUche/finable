@@ -12,7 +12,6 @@ export interface IAccount extends Document {
   card: ICard;
 }
 
-// interfaces/decryptedAccount.interface.ts
 export interface IDecryptedAccount {
   firstName: string;
   surname: string;
