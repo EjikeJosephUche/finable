@@ -91,22 +91,67 @@ class AccountService {
       throw new Error("Error fetching accounts: " + error.message);
     }
   }
-
-  async getEncryptedAndDecryptedAccounts(): Promise<{
-    decryptedAccount: IDecryptedAccount[] | null;
-    encryptedAccounts: IAccount[];
-  }> {
+  async getEncryptedAndDecryptedAccounts(): Promise<IDecryptedAccount[]> {
     try {
-      const encryptedAccounts = await this.getAllAccountsEncrypted();
-      if (!encryptedAccounts || encryptedAccounts.length === 0) {
-        throw new Error("No accounts found");
-      }
-      const decryptedAccount = await this.getAllDecryptedAccounts();
-      if (!decryptedAccount || decryptedAccount.length === 0) {
+      const accounts = await accountModel.find();
+      if (!accounts || accounts.length === 0) {
         throw new Error("No accounts found");
       }
 
-      return { encryptedAccounts, decryptedAccount };
+      // Map over accounts and add decrypted fields next to encrypted fields
+      const combinedAccounts = accounts.map((account) => {
+        const accountObj = account.toObject();
+
+        // Decrypt account-level fields
+        const decryptedAccountFields =
+          typeof account.decryptFields === "function"
+            ? account.decryptFields()
+            : {};
+
+        // Decrypt card-level fields
+        const card = account.card;
+        const decryptedCardFields =
+          card && typeof card.decryptFields === "function"
+            ? card.decryptFields()
+            : {};
+
+        return {
+          // ...accountObj,
+          _id: accountObj._id,
+          fullName: accountObj.fullName,
+          firstName: accountObj.firstName,
+          surname: accountObj.surname,
+          email: accountObj.email,
+          accountNumber: accountObj.accountNumber,
+
+          // Rename encrypted fields to explicit names
+          encryptedPhoneNumber: accountObj.phoneNumber,
+          decryptedPhoneNumber:
+            (decryptedAccountFields as { phoneNumber?: string }).phoneNumber ||
+            null,
+
+          encryptedDateOfBirth: accountObj.dateOfBirth,
+          decryptedDateOfBirth:
+            (decryptedAccountFields as { dateOfBirth?: string }).dateOfBirth ||
+            null,
+
+          card: {
+            // ...accountObj.card,
+            encryptedCardNumber: accountObj.card?.cardNumber,
+            decryptedCardNumber:
+              (decryptedCardFields as { cardNumber?: string }).cardNumber ||
+              null,
+
+            encryptedCVV: accountObj.card?.CVV,
+            decryptedCVV: (decryptedCardFields as { CVV?: string }).CVV || null,
+
+            expiryDate: accountObj.card?.expiryDate,
+            _id: accountObj.card?._id,
+          },
+        };
+      });
+
+      return combinedAccounts as unknown as IDecryptedAccount[];
     } catch (error: any) {
       throw new Error("Error fetching accounts: " + error.message);
     }
