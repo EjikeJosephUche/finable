@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import AccountService from "../services/account.service";
-// import { IAccount } from '../models/account.model';
-// import { ICardGenerator } from '../models/card.model';
 import { IAccount } from "../interfaces/account.interface";
 import { accountValidator } from "../validators/account.validator";
 import { ParamsDictionary } from "express-serve-static-core";
@@ -17,7 +15,6 @@ class AccountController {
       });
     }
     try {
-      // const accountData = validation.data as IAccount;
       const account = await AccountService.createAccount(
         validation.data as IAccount
       );
@@ -76,38 +73,11 @@ class AccountController {
       const decryptedAccount = await AccountService.getDecryptedData_fields(
         hash
       );
-      // res.status(404).json({ message: "Account not found" });
-      // return;
+
       res.status(200).json(decryptedAccount);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching account", error });
     }
-
-    // async getDecryptedDataFields(req: Request, res: Response): Promise<void> {
-    //   try {
-    //     const { hash } = req.body;
-    //     const decryptedFields = await AccountService.getDecryptedData_fields(hash);
-    //     res.status(200).json(decryptedFields);
-    //   } catch (error) {
-    //     res
-    //       .status(500)
-    //       .json({ message: "Error fetching decrypted card fields", error });
-    //   }
-    // }
-
-    // async getAccountByEmail(req: Request, res: Response): Promise<void> {
-    //     try {
-    //         const { email } = req.params;
-    //         const account = await AccountService.getAccountByEmail(email);
-    //         if (!account) {
-    //             res.status(404).json({ message: 'Account not found' });
-    //             return;
-    //         }
-    //         res.status(200).json(account);
-    //     } catch (error) {
-    //         res.status(500).json({ message: 'Error fetching account', error });
-    //     }
-    // }
   }
 }
 export default new AccountController();
